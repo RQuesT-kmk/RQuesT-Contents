@@ -1,0 +1,242 @@
+---
+title: "အမည်ပေး ကင်ပွန်းတပ် ဖိတ်ကြားလွှာ"
+author: "RQuesT"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = FALSE,
+                      message = FALSE,
+                      comment = "")
+```
+
+
+```{r library, include=FALSE}
+library(tidyverse)
+library(patchwork)
+```
+
+```{r waffleUndiagnose, include=TRUE}
+tibble(x = rep(1:10, each = 10), y = rep(1:10, times =10)) |> 
+    ggplot()+
+    geom_point(mapping = aes(x,y, fill = (x>7)),shape = 22, size = 13)+
+    coord_fixed(ratio = 1)+
+    scale_x_continuous(breaks = 1:10)+
+    scale_y_continuous(breaks = 1:10)+
+    scale_fill_brewer(type = "div", palette = 2, 
+                      breaks = c(FALSE), 
+                      labels = c("70% of individuals with the condition remained undiagnosed due to clinical misconceptions"))+
+    theme_void()+
+    theme(legend.position = "bottom",
+          legend.title = element_blank(),
+          legend.key.size = unit(0.5,units = "lines")
+          )
+```
+
+```{r risk, include=TRUE}
+dt_risk <- tibble(
+    x = factor(c("Classic","Non polycystic","Ovulatory","Non-androgenic"),
+               levels = c("Classic","Non polycystic","Ovulatory","Non-androgenic")),
+    y = factor(c("Highest","High","Moderate","Lower"), levels = c("Lower","Moderate","High","Highest")),
+    z = factor(c("Very high (85%)","High","Moderate","Lower"), levels = c("Lower","Moderate","High","Very high (85%)"))
+) 
+bar1 <- ggplot(dt_risk)+
+    geom_col(aes(x, as.numeric(y),fill = x == "Non polycystic"))+
+    scale_fill_brewer(type = "qual", palette = 2, name = "", breaks = NULL)+
+    scale_y_continuous(name = "",breaks = NULL, limits = c(0,5))+
+    geom_text(aes(x, as.numeric(y), label = y), nudge_y = 0.15)+
+    theme_bw()+
+    theme(axis.title = element_blank())+
+    labs(title = "Metabolic risk of the condition")
+
+bar2 <- ggplot(dt_risk)+
+    geom_col(aes(x, as.numeric(z),fill = !(x == "Non polycystic")))+
+    scale_fill_brewer(type = "qual", palette = 6, name = "", breaks = NULL)+
+    scale_y_continuous(name = "",breaks = NULL, limits = c(0,5))+
+    geom_text(aes(x, as.numeric(z), label = z), nudge_y = 0.15, nudge_x = 0.1)+
+    theme_bw()+
+    theme(axis.title = element_blank())+
+    labs(title = "Insulin resistance prevalence")
+
+bar1 + bar2
+```
+
+```{r timeline, include=TRUE}
+timeline <- tibble(
+    Year = factor(c("2012","2013-2022","2023","April 2025", "November 2025","January 2026","February 2026","May 2026"), 
+                  levels = c("2012","2013-2022","2023","April 2025", "November 2025","January 2026","February 2026","May 2026"),
+                  ordered = T),
+    event = c("NIH recommended renaming","Failed efforts","Supports from patients and professionals",
+              "First global survey","First nominal group process","Second global survey","Second nominal group process","Formal announcemnt and publication"),
+    step = 1:8
+)
+ggplot(timeline, aes(x = 1, y = Year)) +
+  # Draws the central timeline spine connecting the periods
+  geom_path(aes(group = 1), color = "#007F7F", linewidth = 1) +
+  
+  # Adds milestone points at each year/date
+  geom_point(color = "#007F7F", size = 5) +
+  
+  # Adds the event descriptions, left-aligned (hjust = 0) and slightly nudged to the right
+  geom_text(aes(label = event), color = "#007F7F",hjust = 1, nudge_x = 0.01, size = 3.8) +
+  
+  # Reverses the Y-axis levels to read chronologically from top to bottom
+  #scale_y_discrete(limits = rev(levels(timeline$Year))) +
+  
+  # Adds padding to the right side (60% expansion) to prevent text cutoff
+  scale_x_continuous(expand = expansion(mult = c(0.1, 0.6))) +
+  
+  # Title and Clean Axis Labels
+  labs(
+    title = "Event Timeline",
+    x = NULL, 
+    y = NULL
+  ) +
+  
+  # Apply Minimal Theme and customize details
+  theme_minimal() +
+  theme(
+    # Remove x-axis text/ticks since all events are aligned vertically at x=1
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    
+    # Style the Year labels on the left side
+    axis.text.y = element_text(face = "bold", color = "black", size = 11),
+    
+    # Strip away background gridlines to maximize contrast
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    
+    # Add a clean title margin
+    plot.title = element_text(face = "bold", size = 14, margin = margin(b = 15))
+  )
+```
+
+```{r xn1, include=FALSE}
+
+# 1. Define and prepare the dataset with alternating positioning
+timeline <- tibble(
+  Year = factor(c("2012","2013-2022","2023","April 2025", "November 2025","January 2026","February 2026","May 2026"), 
+                levels = c("2012","2013-2022","2023","April 2025", "November 2025","January 2026","February 2026","May 2026"),
+                ordered = TRUE),
+  event = c("NIH recommended renaming","Failed efforts","Supports from patients and professionals",
+            "First global survey","First nominal group process","Second global survey","Second nominal group process","Formal announcemnt and publication")
+) %>% 
+  mutate(
+    # Create an index row number to alternate positions
+    id = row_number(),
+    # If odd, place on the left (-0.5); if even, place on the right (0.5)
+    x_pos = if_else(id %% 2 == 1, -0.5, 0.5),
+    # If odd, right-align text (1); if even, left-align text (0)
+    text_align = if_else(id %% 2 == 1, 1, 0),
+    # Add a tiny buffer so text doesn't overlap the end of the ladder rung
+    text_pos = if_else(id %% 2 == 1, x_pos - 0.05, x_pos + 0.05)
+  )
+
+# 2. Build the Step-Ladder Timeline
+ggplot(timeline, aes(y = Year)) +
+  # Central Spine (The trunk of the ladder at x = 0)
+  geom_path(aes(x = 0, group = 1), color = "grey60", linewidth = 1.5) +
+  
+  # Central Dots (Milestones on the main trunk)
+  geom_point(aes(x = 0), color = "#1f77b4", size = 3.5) +
+  
+  # Ladder Rungs (Horizontal branches extending out to the sides)
+  geom_segment(aes(x = 0, xend = x_pos, yend = Year), color = "grey70", linewidth = 0.8) +
+  
+  # Event Labels (Positioned at the ends of the rungs)
+  geom_text(aes(x = text_pos, label = event, hjust = text_align), size = 3, fontface = "plain") +
+  
+  # Format X axis to create equal breathing room on both sides of the center line (0)
+  xlim(-3.5, 3.5) +
+  
+  # Reverse the Y axis so the earliest dates start at the top
+  scale_y_discrete(limits = rev(levels(timeline$Year))) +
+  
+  # Theme and Design customizers
+  labs(title = "Project Milestone Timeline", x = NULL, y = NULL) +
+  theme_minimal() +
+  theme(
+    # Remove all axis lines, ticks, and text coordinates except the Year labels
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    
+    # Place the Year labels directly over the spine points by styling the axis
+    axis.text.y = element_text(face = "bold", color = "black", size = 11, hjust = 0.5),
+    plot.title = element_text(face = "bold", size = 14, hjust = 0.5, margin = margin(b = 20))
+  )
+```
+```{r xn2, include=FALSE}
+
+# 1. Prepare data with a numerical 'step' variable
+timeline <- tibble(
+  Year = factor(c("2012","2013-2022","2023","April 2025", "November 2025","January 2026","February 2026","May 2026"), 
+                levels = c("2012","2013-2022","2023","April 2025", "November 2025","January 2026","February 2026","May 2026"),
+                ordered = TRUE),
+  event = c("NIH recommended renaming","Failed efforts","Supports from patients and professionals",
+            "First global survey","First nominal group process","Second global survey","Second nominal group process","Formal announcemnt and publication")
+) %>% 
+  mutate(
+    step = row_number()
+  )
+
+# 2. Build the Staircase with labels INSIDE and BELOW the steps
+ggplot(timeline) +
+  # Connects the steps using a clean right-angle line path
+  geom_step(aes(x = Year, y = step, group = 1), color = "grey75", linewidth = 1.2, direction = "hv") +
+  
+  # Your completed geom_label placed tucked inside the step
+  geom_label(
+    aes(x = Year, y = step, label = event),
+    fill = "white",          
+    color = "#2c3e50",       
+    label.padding = unit(0.3, "lines"), 
+    label.size = 0.25,       
+    size = 3.5,              
+    fontface = "bold",       
+    hjust = 0,               # Left-align text so it stretches to the right INSIDE the step
+    vjust = 1.5,             # Position it cleanly BELOW the horizontal line
+    nudge_x = 0.05           # Slightly nudge it right so it doesn't clip the vertical wall
+  ) +
+  
+  # Add padding to the bottom and right edges so nothing gets clipped in RMD HTML
+  scale_y_continuous(expand = expansion(mult = c(0.2, 0.1))) +
+  scale_x_discrete(expand = expansion(mult = c(0.05, 0.3))) +
+  
+  labs(
+    title = "Project Milestones & Timeline",
+    x = NULL,
+    y = NULL
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(face = "bold", color = "black", size = 10, angle = 30, hjust = 1),
+    axis.text.y = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(face = "bold", size = 14, hjust = 0.5, margin = margin(b = 15))
+  )
+```
+
+
+```{r nomenclature, include=TRUE}
+concensus <- tibble(
+    x = c(0.86,0.76),
+    y = c("Patients","Health professional")
+)
+ggplot(concensus)+
+    geom_col(aes(x,y), fill = "#007F7F" )+
+    scale_x_continuous(limits = c(0,1), labels = scales::percent_format(),
+                       name = "")+
+    geom_text(aes(x,y, label = scales::percent(x)), nudge_x = 0.05, colour = "#007F7F")+
+    theme_classic()+
+    theme(panel.grid.major.x = element_line(colour = "grey", linewidth = 0.5))+
+    labs(y = "",
+         title = "Unprecedented global concensus mandates a nomenclature shift",
+         subtitle = "Results of a 14 years process involving 56 organizations and over 22,000 respondents \nacross 6 continents. Published in the Lancet (May 2026)")
+```
+
