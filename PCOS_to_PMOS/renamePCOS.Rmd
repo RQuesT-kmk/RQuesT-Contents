@@ -206,4 +206,4 @@ ggplot(concensus)+
 
 1.  Teede H, Khomami M, Morman R et al. [Polyendocrine metabolic ovarian syndrome, the new name for polycystic ovary syndrome: a multistep global consensus process](https://doi.org/10.1016/S0140-6736(26)00717-8). *The Lancet*, 2026; 407, 2329-2339.
 
-2.  [Will renaming PCOS help women get diagnosed?](https://www.bbc.co.uk/programmes/p0000000) - *What in the World* podcast, BBC World Service.
+2.  [Will renaming PCOS help women get diagnosed?](https://www.youtube.com/watch?v=A-V6rmpj9XM) - *What in the World* podcast, BBC World Service.
