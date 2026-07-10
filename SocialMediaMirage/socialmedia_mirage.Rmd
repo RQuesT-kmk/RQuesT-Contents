@@ -1,0 +1,90 @@
+---
+title: "Social Media Mirage"
+author: "RQuesT"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE,
+                      warning = FALSE,
+                      comment = "")
+library(imager)
+```
+
+# The Facebook Infidelity Paradox: How "Selection Bias" Distorts Our View of Relationships
+
+We have all seen it. You open your Facebook app, scroll for five minutes, and are immediately bombarded with high-drama posts. There is a viral confession about a husband caught cheating, a screenshot of devastating text messages, or an essay from a heartbroken woman exposing her partner's betrayal. 
+
+After seeing these stories day in and day out, it is easy to understand why a sweeping consensus begins to form: *"Men are cheaters. Period."* 
+
+This emotional reaction is entirely human, but it is scientifically and statistically wrong. When we make this generalization, we drag innocent, loyal partners—like the quiet dads staying home to care for their kids—into a global courtroom where they are judged guilty by association.
+
+So why does our brain play this trick on us? The answer lies in a foundational concept from epidemiology and statistics: **Selection Bias**.
+
+---
+
+### 1. The Broken Mirror: Facebook as a "Grab Sample"
+
+To draw a valid conclusion about any target population (for example, "all men in relationships"), a researcher must study a sample that truly represents that population. 
+
+When you read posts on Facebook, you are not looking at a representative sample. Instead, you are looking at what statisticians call a **grab sample** (or convenience sample). This is a sample selected by easily employed but highly biased methods—like a "man-on-the-street" poll. 
+
+Facebook's Newsfeed does not randomly select couples to showcase their daily life. Instead, it relies on **self-selection bias** (or volunteer bias). Think about it: a guy who lovingly buys his girlfriend dinner, washes the dishes, or quietly stays home to look after the kids is not going to go viral. Peaceful, routine loyalty does not generate "engagement." It is the dramatic, emotionally explosive outliers—the relationship crises—that prompt people to post and share. 
+
+Because the stable, happy relationships never "enter the study" (your feed), your sample is systematically skewed toward failure.
+
+---
+
+```{r image1}
+knitr::include_graphics("C:/docs/RQuest/RQuest_project/RQuesT-Contents/SocialMediaMirage/The_Social_Media_Mirage.png")
+```
+
+### 2. The Hospital Fallacy (Berkson's Bias)
+
+There is a brilliant analogy: **"Going to a hospital, looking only at the patients in the beds, and screaming: 'Is there no healthy person left in the world?'"** .
+
+In epidemiology, this exact mistake is known as **Berkson's Bias** (or the Berksonian Fallacy). Joseph Berkson famously proved that if you conduct a study using only hospitalized patients, you will find false, highly distorted associations between diseases because hospitalized individuals are systematically selected *because* they are sick. 
+
+Social media is the digital equivalent of a hospital ward for relationships. It is a repository where broken or "sick" relationships are brought for public diagnosis and support . If you restrict your worldview to the hospital beds of Facebook, concluding that "all men cheat" is identical to looking at a row of hospital beds and concluding that "all humanity is terminally ill."
+
+---
+
+
+```{r image2}
+knitr::include_graphics("C:/docs/RQuest/RQuest_project/RQuesT-Contents/SocialMediaMirage/Understanding_Selection_and_Survivorship_Bias.png")
+```
+
+### 3. The Invisible Submerged Iceberg: Reporting Bias
+
+There is another hidden mechanism distorting our data: **reporting bias**. 
+
+When men are cheated on, they rarely write long, public essays about their heartbreak on social media due to societal expectations, pride, or stigma. Instead, they handle their grief privately. 
+
+In scientific research, this is a form of **ascertainment bias**. Because one group is highly visible and vocal while the other suppresses their experience, the data collector receives an entirely lopsided view of who is suffering and who is causing the harm. 
+
+This brings us to the famous **Iceberg Effect** (or Symptom Pyramid). The cheating scandals that float to the top of your feed represent only the tiny, highly visible **"tip of the iceberg"**. The vast, silent majority of healthy, faithful, and unproblematic relationships remain completely submerged, invisible to the casual scroller.
+
+---
+
+### Summary: Why the Generalization Fails
+
+The claim "men are cheaters" fails the fundamental scientific test of **external validity (generalizability)**. Because the "data" is harvested from a self-selected, highly sensationalized group of emotional outliers, it is mathematically impossible to apply those conclusions to the general population. 
+
+The next time you see a viral post on your feed, remember: **the happy, loyal partners are too busy washing the dishes to make the news** . Don't let a biased algorithm dictate your faith in humanity.
+
+---
+
+### **References**
+
+1. **Somerville, M., Kumaran, K., & Anderson, R. (2012).** *Public Health and Epidemiology at a Glance.* London: John Wiley & Sons. 
+   * *Establishes the core definitions of Selection Bias, the Iceberg Effect, and Volunteer Bias.*
+2. **Porta, M. (Ed.). (2014).** *A Dictionary of Epidemiology* (6th ed.). New York: Oxford University Press.
+   * *Defines Ascertainment Bias, Berkson's Bias, and Reporting Bias.*
+3. **Celentano, D. D., & Szklo, M. (2019).** *Gordis Epidemiology* (6th ed.). Philadelphia: Elsevier.
+   * *Discusses the threats to internal and external validity and how selection processes create false associations.*
+4. **Aschengrau, A., & Seage, G. R. (2020).** *Essentials of Epidemiology in Public Health* (4th ed.). Boston: Jones & Bartlett Learning.
+   * *Provides the foundational frameworks for evaluating selection bias and misclassification in population observation.*
+
+***
