@@ -1,0 +1,162 @@
+---
+title: "Poor Data Visual"
+author: "RQuesT"
+date: "`r Sys.Date()`"
+output: 
+    html_document:
+        keep_md: TRUE
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T,
+                      warning = F,
+                      message = F)
+```
+
+### Overview
+
+To visually convey why this dashboard failed, we will build a composite chart simulating the cluttered, overwhelming dashboard described in your text:
+
+1. **Mock Data Generation**: Create a synthetic dataset representing 200 clinic pins with overlapping coordinates, multiple subtle shades of blue and orange, stacked stock statuses, and mock filter UI elements.
+
+2. **Dense Scatter "Map"**: Plot overlapping clinic points with low contrast, hard-to-distinguish color tiers, and distracting grid-lines.
+
+3. **Four Cluttered Stacked Bar Charts**: Show the fragmented view across 4 regions with multiple stacked stock layers.
+
+4. **Mock Filter Controls**: Draw rectangular UI boxes representing the 6 tedious drop-down filters.
+
+5. **Layout Assembly**: Align the pieces using standard `ggplot2` (leveraging facet/panel layouts or grob composition via grid/ggplot2 native tools).
+
+### Complete R codes
+
+#### 1. Load Required Libraries  
+
+```{r libraries, include=TRUE}
+library(dplyr)
+library(ggplot2)
+library(grid) # Base R package for grid layout view-port arrangement
+set.seed(42) #Set seed for reproducible synthetic data
+```
+
+#### 2. Simulate Synthetic Dataset (200 Clinic Pins & Multilayer Attributes)
+
+```{r dataSim}
+n_clinics <- 200
+bad_data <- tibble(
+  clinic_id       = 1:n_clinics,
+  long            = runif(n_clinics, min = 94.0, max = 98.5),
+  lat             = runif(n_clinics, min = 15.0, max = 22.0),
+  region          = sample(paste("Region", LETTERS[1:4]), n_clinics, replace = TRUE),
+  vaccine_type    = sample(c("HepB", "BCG", "OPV", "Measles"), n_clinics, replace = TRUE),
+  cold_chain      = sample(c("Solar", "Electric", "Passive Box"), n_clinics, replace = TRUE),
+  # 4 confusing shades of blue and orange representing stock tier
+  stock_tier      = sample(
+    c("Tier 1", "Tier 2", "Tier 3", "Tier 4"),
+    n_clinics,
+    replace = TRUE
+  ),
+  stock_count     = sample(5:120, n_clinics, replace = TRUE)
+)
+
+# Palette with 4 poorly-distinguishable blues and oranges
+confusing_colors <- c(
+  "Tier 1"   = "#4A90E2",
+  "Tier 2"   = "#2A52BE",
+  "Tier 3" = "#E67E22",
+  "Tier 4" = "#D35400"
+)
+```
+
+#### 3. Component 1: Mock UI Dropdowns (The 6 Tedious Filters)
+
+```{r uiSim}
+filter_labels <- tibble(
+  x = rep(c(1.5, 3.5, 5.5), 2),
+  y = c(rep(2, 3), rep(1, 3)),
+  label = c(
+    "Region [All v]",
+    "Vaccine Type [HepB v]",
+    "Cold-Chain [Solar v]",
+    "Stock Tier [Tier 1 v]",
+    "Facility Type [All v]",
+    "Reporting Week [Wk 34 v]"
+  )
+)
+p_filters <- ggplot(filter_labels, aes(x = x, y = y)) +
+  geom_tile(width = 1.8, height = 0.65, fill = "#F0F3F4", color = "#BDC3C7", size = 0.8) +
+  geom_text(aes(label = label), size = 3, fontface = "bold", color = "#2C3E50") +
+  xlim(0.3, 6.7) +
+  ylim(0.4, 2.6) +
+  labs(title = "Dropdown Filter Hell (6 Required Selections Before Insight)") +
+  theme_void() +
+  theme(
+    plot.title = element_text(size = 11, face = "bold", hjust = 0.5, margin = margin(b = 4))
+  )
+print(p_filters)
+```
+
+#### 4. Component 2: The Sprawling, Over-Plotted Map (200 Clinic Pins)
+
+```{r overplotMap}
+p_map <- ggplot(bad_data, aes(x = long, y = lat, color = stock_tier, shape = cold_chain)) +
+  geom_point(size = 3.5, alpha = 0.85) +
+  scale_color_manual(values = confusing_colors) +
+  labs(
+    title = "Sprawling Map View (200 Clinics Over-plotted)",
+    subtitle = "Field supervisors spent 15 mins clicking filters (Stockout stuck at 18%)",
+    x = "Longitude Coordinate",
+    y = "Latitude Coordinate",
+    color = "Stock Tier",
+    shape = "Cold-Chain Model"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 12, face = "bold"),
+    plot.subtitle = element_text(size = 9, color = "red4"),
+    panel.grid.major = element_line(color = "grey80", linetype = "dashed"),
+    legend.position = "right",
+    legend.box = "vertical",
+    legend.title = element_text(size = 8, face = "bold"),
+    legend.text = element_text(size = 7)
+  )
+print(p_map)
+```
+
+#### 5. Component 3: Four Cluttered Stacked Bar Charts
+
+```{r clutterBar}
+p_bars <- bad_data %>%
+  group_by(region, vaccine_type, stock_tier) %>%
+  summarise(total_stock = sum(stock_count), .groups = "drop") %>%
+  ggplot(aes(x = vaccine_type, y = total_stock, fill = stock_tier)) +
+  geom_col(position = "stack", width = 0.6) +
+  facet_wrap(~ region, nrow = 1) +
+  scale_fill_manual(values = confusing_colors) +
+  labs(
+    title = "Regional Vaccine Breakdown (4 Stacked Bar Sub-panels)",
+    x = "Vaccine Type",
+    y = "Doses",
+    fill = "Stock Tier"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 11, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 7),
+    strip.text = element_text(face = "bold", size = 8),
+    legend.position = "none"
+  )
+
+print(p_bars)
+```
+
+#### 6. Render Composite Dashboard to Canvas
+```{r dashboard, fig.width= 8, fig.height=7}
+# Open a new plotting page
+grid.newpage()
+# Define grid viewport layout: Filters (Top), Map (Middle), Stacked Bars (Bottom)
+pushViewport(viewport(layout = grid.layout(nrow = 3, ncol = 1, heights = unit(c(1.2, 4.5, 3.2), "null"))))
+print(p_filters, vp = viewport(layout.pos.row = 1, layout.pos.col = 1))
+print(p_map,     vp = viewport(layout.pos.row = 2, layout.pos.col = 1))
+print(p_bars,    vp = viewport(layout.pos.row = 3, layout.pos.col = 1))
+```
+
